@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import routesList from "src/constants/routesList";
 import Page from "src/layouts/page";
+import LoginPage from "src/pages/auth/LoginPage";
 import PrivatedRoute from "./PrivatedRoute";
 
 const MainRouters = () => (
@@ -11,7 +12,7 @@ const MainRouters = () => (
       <Route path={routesList.PRODUCT} element={<Page>PRODUCT </Page>} />
     </Route>
 
-    <Route path={routesList.LOGIN} element={<div>Login</div>} />
+    <Route path={routesList.LOGIN} element={<LoginPage />} />
   </Routes>
 );
 export default MainRouters;

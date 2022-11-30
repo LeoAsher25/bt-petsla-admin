@@ -1,7 +1,10 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Button } from "antd";
 import { ReactNode, useState } from "react";
+import { toast } from "react-toastify";
 import { menuItems } from "src/constants/menu-items";
+import { authActions } from "src/redux/auth/authSlice";
+import { useAppDispatch } from "src/redux/store";
 
 const { Header, Sider, Content } = Layout;
 
@@ -11,6 +14,12 @@ interface IProps {
 
 const Page = (props: IProps) => {
   const [collapsed, setCollapsed] = useState(false);
+
+  const dispatch = useAppDispatch();
+  const handleLogout = () => {
+    dispatch(authActions.handleLogout({}));
+    toast.success("Logout successfully");
+  };
 
   return (
     <Layout className="min-h-screen">
@@ -40,11 +49,17 @@ const Page = (props: IProps) => {
           className="site-layout-background"
           style={{ padding: 0, backgroundColor: "white" }}
         >
-          <div
-            className="  trigger cursor-pointer "
-            onClick={() => setCollapsed(!collapsed)}
-          >
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          <div className="flex items-center justify-between">
+            <div
+              className="  trigger cursor-pointer "
+              onClick={() => setCollapsed(!collapsed)}
+            >
+              {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            </div>
+
+            <Button type="primary" className="mx-3" onClick={handleLogout}>
+              Logout
+            </Button>
           </div>
         </Header>
         <Content

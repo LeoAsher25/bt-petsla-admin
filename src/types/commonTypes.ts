@@ -20,3 +20,8 @@ export interface ErrorResponse {
   code?: string;
   message: string;
 }
+
+export interface IRouteBreadCrumb {
+  to: string;
+  title: string;
+}

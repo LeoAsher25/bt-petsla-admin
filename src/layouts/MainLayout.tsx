@@ -12,7 +12,7 @@ interface IProps {
   children?: ReactNode;
 }
 
-const Page = (props: IProps) => {
+const MainLayout = (props: IProps) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -65,7 +65,7 @@ const Page = (props: IProps) => {
         <Content
           className="site-layout-background"
           style={{
-            padding: 20,
+            padding: "0.5rem 0.75rem",
           }}
         >
           {props.children}
@@ -75,4 +75,4 @@ const Page = (props: IProps) => {
   );
 };
 
-export default Page;
+export default MainLayout;

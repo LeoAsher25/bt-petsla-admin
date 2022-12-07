@@ -1,10 +1,10 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Layout, Menu, Button } from "antd";
+import { Button, Layout } from "antd";
 import { ReactNode, useState } from "react";
 import { toast } from "react-toastify";
-import { menuItems } from "src/constants/menu-items";
 import { authActions } from "src/redux/auth/authSlice";
 import { useAppDispatch } from "src/redux/store";
+import MenuList from "./MenuList";
 
 const { Header, Sider, Content } = Layout;
 
@@ -28,8 +28,7 @@ const MainLayout = (props: IProps) => {
         trigger={null}
         collapsible
         collapsed={collapsed}
-        className="min-h-screen overflow-hidden"
-      >
+        className="min-h-screen overflow-hidden">
         <div className="logo h-[66px] p-3">
           <img
             src={collapsed ? "/img/collapsed.png" : "/img/shopLogo.png"}
@@ -37,23 +36,16 @@ const MainLayout = (props: IProps) => {
             className="h-full mx-auto"
           />
         </div>
-        <Menu
-          theme="light"
-          mode="inline"
-          defaultSelectedKeys={["1"]}
-          items={menuItems}
-        />
+        <MenuList />
       </Sider>
       <Layout className="site-layout">
         <Header
           className="site-layout-background"
-          style={{ padding: 0, backgroundColor: "white" }}
-        >
+          style={{ padding: 0, backgroundColor: "white" }}>
           <div className="flex items-center justify-between">
             <div
               className="  trigger cursor-pointer "
-              onClick={() => setCollapsed(!collapsed)}
-            >
+              onClick={() => setCollapsed(!collapsed)}>
               {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </div>
 
@@ -66,8 +58,7 @@ const MainLayout = (props: IProps) => {
           className="site-layout-background"
           style={{
             padding: "0.5rem 0.75rem",
-          }}
-        >
+          }}>
           {props.children}
         </Content>
       </Layout>

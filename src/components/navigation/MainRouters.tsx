@@ -1,10 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import routesList from "src/constants/routesList";
-import MainLayout from "src/layouts/MainLayout";
 import LoginPage from "src/pages/auth/LoginPage";
 import ProductList from "src/pages/product/ProductList";
 import PrivatedRoute from "./PrivatedRoute";
-
 const MainRouters = () => (
   <Routes>
     <Route path="/" element={<PrivatedRoute />}>

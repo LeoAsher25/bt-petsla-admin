@@ -18,7 +18,7 @@ const MainPage = (props: IMainPageProps) => {
           <div className="text-lg font-semibold">{props.title}</div>
           <Breadcrumb separator=">">
             {props.routes.map((item, index) => (
-              <Breadcrumb.Item key={index} href="">
+              <Breadcrumb.Item key={index}>
                 <Link to={item.to}>{item.title}</Link>
               </Breadcrumb.Item>
             ))}

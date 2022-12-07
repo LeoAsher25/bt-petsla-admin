@@ -1,12 +1,5 @@
 import { HomeOutlined, SketchOutlined, UserOutlined } from "@ant-design/icons";
-import { NavLink } from "react-router-dom";
 import routesList from "./routesList";
-
-let activeStyle = {
-  textDecoration: "underline",
-};
-
-let activeClassName = "underline";
 
 export const menuItems = [
   {

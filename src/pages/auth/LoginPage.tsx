@@ -38,6 +38,7 @@ const LoginPage = () => {
           <Form.Item
             // label="Username"
             name="username"
+            initialValue="leoasher"
             rules={[
               {
                 required: true,
@@ -51,6 +52,7 @@ const LoginPage = () => {
           <Form.Item
             // label="Password"
             name="password"
+            initialValue="leoasher"
             rules={[
               {
                 required: true,
@@ -58,7 +60,7 @@ const LoginPage = () => {
               },
             ]}
           >
-            <Input placeholder="Password" />
+            <Input type="password" placeholder="Password" />
           </Form.Item>
 
           <div className="flex justify-between">

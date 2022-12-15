@@ -7,7 +7,7 @@ interface IMainPageProps {
   title: string;
   routes: IRouteBreadCrumb[];
   actionList?: ReactNode[];
-  children?: ReactNode;
+  children?: ReactNode | ReactNode[];
 }
 
 const MainPage = (props: IMainPageProps) => {
@@ -27,6 +27,7 @@ const MainPage = (props: IMainPageProps) => {
 
         <div className="flex items-center">{props.actionList}</div>
       </div>
+      {props.children}
     </div>
   );
 };

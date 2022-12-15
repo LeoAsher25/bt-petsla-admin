@@ -1,4 +1,4 @@
-const _theme = {
+export const _theme = {
   lightTheme: {
     bgColor1: "#fff",
     bgColor2: "#F6F9FC",
@@ -12,4 +12,9 @@ const _theme = {
     colorBlur: "#bbb",
   },
 };
-export default _theme;
+
+export const statusTagColor = {
+  INACTIVE: "red",
+  SCHEDULED: "blue",
+  PUBLISHED: "green",
+};

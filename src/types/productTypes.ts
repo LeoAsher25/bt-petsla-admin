@@ -1,4 +1,5 @@
 export interface IProduct {
+  status: number;
   name: string;
   images: string[];
   price: number;
@@ -19,3 +20,5 @@ export interface IProductInWishList
   extends Omit<IProduct, "stock" | "categories"> {}
 
 export interface ICategory {}
+
+export const EProductStatus = ["INACTIVE", "SCHEDULED", "PUBLISHED"];

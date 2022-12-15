@@ -1,9 +1,13 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout } from "antd";
-import { ReactNode, useState } from "react";
+import { AxiosResponse } from "axios";
+import { stat } from "fs";
+import { ReactNode, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { authActions } from "src/redux/auth/authSlice";
-import { useAppDispatch } from "src/redux/store";
+import { RootState, useAppDispatch, useAppSelector } from "src/redux/store";
+import repositories from "src/repositories";
+import { ErrorResponse } from "src/types/commonTypes";
 import MenuList from "./MenuList";
 
 const { Header, Sider, Content } = Layout;
@@ -14,12 +18,28 @@ interface IProps {
 
 const MainLayout = (props: IProps) => {
   const [collapsed, setCollapsed] = useState(false);
+  const { accessToken } = useAppSelector((state: RootState) => state.auth);
 
   const dispatch = useAppDispatch();
   const handleLogout = () => {
     dispatch(authActions.handleLogout({}));
     toast.success("Logout successfully");
   };
+
+  useEffect(() => {
+    if (accessToken) {
+      const fetchProfile = async () => {
+        try {
+          const res = await repositories.auth.get("profile");
+          console.log("res profile: ", res);
+        } catch (err) {
+          console.log("err: ", err);
+        }
+      };
+
+      fetchProfile();
+    }
+  }, [accessToken]);
 
   return (
     <Layout className="min-h-screen">
@@ -28,7 +48,8 @@ const MainLayout = (props: IProps) => {
         trigger={null}
         collapsible
         collapsed={collapsed}
-        className="min-h-screen overflow-hidden">
+        className="min-h-screen overflow-hidden"
+      >
         <div className="logo h-[66px] p-3">
           <img
             src={collapsed ? "/img/collapsed.png" : "/img/shopLogo.png"}
@@ -41,11 +62,13 @@ const MainLayout = (props: IProps) => {
       <Layout className="site-layout">
         <Header
           className="site-layout-background"
-          style={{ padding: 0, backgroundColor: "white" }}>
+          style={{ padding: 0, backgroundColor: "white" }}
+        >
           <div className="flex items-center justify-between">
             <div
               className="  trigger cursor-pointer "
-              onClick={() => setCollapsed(!collapsed)}>
+              onClick={() => setCollapsed(!collapsed)}
+            >
               {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </div>
 
@@ -58,7 +81,8 @@ const MainLayout = (props: IProps) => {
           className="site-layout-background"
           style={{
             padding: "0.5rem 0.75rem",
-          }}>
+          }}
+        >
           {props.children}
         </Content>
       </Layout>

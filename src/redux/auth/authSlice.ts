@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-import { ILoginResponseData } from "src/types/authTypes";
+import { ILoginResponseData, IUser } from "src/types/authTypes";
 import { ErrorResponse } from "src/types/commonTypes";
 import {
   getLocalStorage,
@@ -11,10 +11,14 @@ import authThunkActions from "./authThunkActions";
 
 interface IAuthState {
   accessToken: string | undefined;
+  refreshToken: string | undefined;
+  currentUser: IUser | null;
 }
 
 const initialState: IAuthState = {
   accessToken: getLocalStorage("accessToken"),
+  refreshToken: getLocalStorage("refreshToken"),
+  currentUser: null,
 };
 
 const authSlice = createSlice({
@@ -23,16 +27,23 @@ const authSlice = createSlice({
   reducers: {
     handleLogout(state, action) {
       state.accessToken = undefined;
+      state.refreshToken = undefined;
       removeLocalStorage("accessToken");
+      removeLocalStorage("refreshToken");
+    },
+    setItem(state, action) {
+      Object.assign(state, action.payload);
     },
   },
   extraReducers: (builder) => {
     builder.addCase(
       authThunkActions.login.fulfilled,
       (state, action: PayloadAction<AxiosResponse<ILoginResponseData>>) => {
-        const accessToken = action.payload.data.accessToken;
+        const { accessToken, refreshToken } = action.payload.data;
         state.accessToken = accessToken;
+        state.refreshToken = refreshToken;
         setLocalStorage("accessToken", accessToken);
+        setLocalStorage("refreshToken", refreshToken);
       }
     );
     builder.addCase(authThunkActions.login.rejected, (state, action) => {

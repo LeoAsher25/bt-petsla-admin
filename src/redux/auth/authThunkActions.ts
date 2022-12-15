@@ -10,7 +10,8 @@ const login = createAsyncThunk("auth/login", async (data: any, thunkApi) => {
       "/auth/login",
       data
     );
-    return res;
+
+    return { ...res };
   } catch (err) {
     const error = err as AxiosResponse<ErrorResponse>;
     return thunkApi.rejectWithValue(error);

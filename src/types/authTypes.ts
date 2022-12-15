@@ -21,6 +21,7 @@ export interface IRegisterFormData {
 
 export interface ILoginResponseData {
   accessToken: string;
+  refreshToken: string;
 }
 
 export interface ILoginResponseError {

@@ -21,7 +21,8 @@ const LoginPage = () => {
     if (res.payload.status === 200) {
       toast.success("Login successfully");
     } else {
-      toast.error(res.payload.data.message);
+      console.log("error login: ", res);
+      // toast.error(res.payload.data.message);
     }
   };
 

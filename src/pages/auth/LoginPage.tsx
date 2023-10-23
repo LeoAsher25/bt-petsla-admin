@@ -1,12 +1,14 @@
-import { Button, Card, Checkbox, Form, Input } from "antd";
+import { Button, Card, Form, Input } from "antd";
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import routesList from "src/constants/routesList";
 import authThunkActions from "src/redux/auth/authThunkActions";
 
 import { RootState, useAppDispatch, useAppSelector } from "src/redux/store";
 import { ILoginRequestData } from "src/types/authTypes";
+import { IErrorResponse } from "src/types/commonTypes";
+import { handleError } from "src/utils/handleError";
 
 const LoginPage = () => {
   const accessToken = useAppSelector(
@@ -17,12 +19,14 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (data: ILoginRequestData) => {
-    const res: any = await dispatch(authThunkActions.login(data));
-    if (res.payload.status === 200) {
-      toast.success("Login successfully");
-    } else {
-      console.log("error login: ", res);
-      // toast.error(res.payload.data.message);
+    try {
+      const response: any = await dispatch(
+        authThunkActions.login(data)
+      ).unwrap();
+      navigate(routesList.HOME);
+      toast.success("Đăng nhập thành công");
+    } catch (error) {
+      handleError(error);
     }
   };
 
@@ -33,63 +37,62 @@ const LoginPage = () => {
   }, [accessToken, navigate]);
 
   return (
-    <div className="login-page h-screen w-screen flex items-center justify-center -mt-16">
-      <Card title="Login" bordered={false} className="w-[350px]">
+    <div className="login-page tw-h-screen tw-w-screen tw-flex tw-items-center tw-justify-center -tw-mt-16">
+      <Card title="Login" bordered={false} className="tw-w-[350px]">
         <Form onFinish={handleLogin} layout="vertical">
           <Form.Item
-            // label="Username"
-            name="username"
-            initialValue="leoasher"
-            rules={[
-              {
-                required: true,
-                message: "Please input your username!",
-              },
-            ]}
-          >
-            <Input placeholder="Username" />
+            label="Email"
+            name="email"
+            initialValue="test@gmail.com"
+            rules={
+              [
+                // {
+                //   required: true,
+                //   message: "Vui lòng nhập email của bạn!",
+                // },
+              ]
+            }>
+            <Input placeholder="Email của bạn" />
           </Form.Item>
 
           <Form.Item
-            // label="Password"
+            label="Password"
             name="password"
-            initialValue="leoasher"
+            initialValue="Test123@"
             rules={[
               {
                 required: true,
-                message: "Please input your password!",
+                message: "Vui lòng nhập mật khẩu của bạn!",
               },
-            ]}
-          >
-            <Input type="password" placeholder="Password" />
+            ]}>
+            <Input type="password" placeholder="Mật khẩu của bạn" />
           </Form.Item>
 
-          <div className="flex justify-between">
+          {/* <div className="flex justify-between">
             <Form.Item
               name="remember"
               valuePropName="checked"
-              className="-mt-2"
-            >
+              className="-mt-2">
               <Checkbox>Remember me</Checkbox>
             </Form.Item>
             <Link className="ml-1" to={routesList.RESET_PASSWORD}>
               Forgot password
             </Link>
-          </div>
+          </div> */}
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" className="w-full">
-              Login
+          <Form.Item className="tw-mt-6">
+            <Button type="primary" htmlType="submit" className="tw-w-full">
+              Đăng nhập
             </Button>
           </Form.Item>
         </Form>
 
-        <div className="text-center">
+        {/* <div className="text-center">
           <span>Do not have an account?</span>
           <Link className="ml-1" to={routesList.REGISTER}>
             Register
           </Link>
-        </div>
+        </div> */}
       </Card>
     </div>
   );

@@ -1,11 +1,11 @@
-import { AxiosInstance } from "axios";
+import { AxiosInstance, AxiosRequestConfig } from "axios";
 
 const factories = (axios: AxiosInstance) => (resource: string) => ({
-  create(payload: any, config: any = {}) {
+  create(payload: any, config: AxiosRequestConfig = {}) {
     return axios.post(`${resource}`, payload, config);
   },
 
-  post(payload: any, url?: string, config: any = {}) {
+  post(payload: any, url?: string, config: AxiosRequestConfig = {}) {
     return axios.post(
       url ? `${resource}/${url}` : `${resource}`,
       payload,
@@ -13,23 +13,23 @@ const factories = (axios: AxiosInstance) => (resource: string) => ({
     );
   },
 
-  getMany(config: any = {}) {
+  getMany(config: AxiosRequestConfig = {}) {
     return axios.get(`${resource}`, config);
   },
 
-  getOne(id: string | number, config: any = {}) {
+  getOne(id: number | string | number, config: AxiosRequestConfig = {}) {
     return axios.get(`${resource}/${id}`, config);
   },
 
-  get(url?: string, config: any = {}) {
+  get(url?: string, config: AxiosRequestConfig = {}) {
     return axios.get(url ? `${resource}/${url}` : `${resource}`, config);
   },
 
-  update(payload: any, id: string, config: any = {}) {
+  update(payload: any, id: number | string, config: AxiosRequestConfig = {}) {
     return axios.put(`${resource}/${id}`, payload, config);
   },
 
-  put(payload: any, url?: string, config: any = {}) {
+  put(payload: any, url?: string, config: AxiosRequestConfig = {}) {
     return axios.put(
       url ? `${resource}/${url}` : `${resource}`,
       payload,
@@ -37,7 +37,7 @@ const factories = (axios: AxiosInstance) => (resource: string) => ({
     );
   },
 
-  patch(payload: any, url?: string, config: any = {}) {
+  patch(payload: any, url?: string, config: AxiosRequestConfig = {}) {
     return axios.patch(
       url ? `${resource}/${url}` : `${resource}`,
       payload,
@@ -45,7 +45,7 @@ const factories = (axios: AxiosInstance) => (resource: string) => ({
     );
   },
 
-  delete(id: string, config: any = {}) {
+  delete(id: number | string, config: AxiosRequestConfig = {}) {
     return axios.delete(`${resource}/${id}`, config);
   },
 });

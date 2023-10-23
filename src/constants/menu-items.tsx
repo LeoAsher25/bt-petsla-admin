@@ -12,12 +12,12 @@ export const menuItems = [
     key: "2",
     icon: <UserOutlined />,
     to: routesList.USER,
-    label: "User",
+    label: "Người dùng",
   },
   {
     key: "3",
     icon: <SketchOutlined />,
     to: routesList.PRODUCT,
-    label: "Product",
+    label: "Sản phẩm",
   },
 ];

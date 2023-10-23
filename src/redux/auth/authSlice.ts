@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import { ILoginResponseData, IUser } from "src/types/authTypes";
-import { ErrorResponse } from "src/types/commonTypes";
+import { IErrorResponse } from "src/types/commonTypes";
 import {
   getLocalStorage,
   removeLocalStorage,
@@ -47,7 +47,7 @@ const authSlice = createSlice({
       }
     );
     builder.addCase(authThunkActions.login.rejected, (state, action) => {
-      const payload = action.payload as AxiosResponse<ErrorResponse>;
+      const payload = action.payload as AxiosResponse<IErrorResponse>;
     });
   },
 });

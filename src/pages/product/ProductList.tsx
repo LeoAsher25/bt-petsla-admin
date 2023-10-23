@@ -1,101 +1,103 @@
 import { EditOutlined } from "@ant-design/icons";
-import { Button, notification, Pagination, Table, Tag } from "antd";
+import { Button, Pagination, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { productStatusList } from "src/constants/products";
+import AddOrEditProductDrawer from "src/components/product/AddOrEditProductDrawer";
 import routesList from "src/constants/routesList";
-import MainPage from "src/layouts/MainPage";
+import PageWrap from "src/layouts/PageWrap";
 import repositories from "src/repositories";
 import { IRouteBreadCrumb } from "src/types/commonTypes";
 import { IProduct } from "src/types/productTypes";
+import getFullPathMedia from "src/utils/Media/getFullPathMedia";
+import formatTime from "src/utils/formatTime";
+import { handleError } from "src/utils/handleError";
 
 const routes: IRouteBreadCrumb[] = [
   {
     to: routesList.HOME,
-    title: "Home",
+    title: "Trang chủ",
   },
   {
     to: "",
-    title: "Product List",
+    title: "Sản phẩm",
+  },
+  {
+    to: routesList.PRODUCT,
+    title: "Danh sách sản phẩm",
   },
 ];
 
 const columns: ColumnsType<IProduct> = [
-  // {
-  //   title: "ID",
-  //   dataIndex: "key",
-  //   key: "key",
-  //   render(value, record, index) {
-  //     return <span># {value}</span>;
-  //   },
-  // },
   {
-    title: "Name",
+    title: "ID",
+    dataIndex: "idReadable",
+    key: "idReadable",
+    align: "center",
+    width: 100,
+    render(value, record, index) {
+      return <span>#{value}</span>;
+    },
+  },
+  {
+    title: "Tên",
     dataIndex: "name",
     key: "name",
     render(value, record, index) {
       return (
-        <Link to={record._id!} className="flex items-center">
+        <Link
+          to={record._id as string}
+          className="tw-inline-flex tw-items-center">
           <img
-            className="w-[30px] h-[30px] object-contain"
-            src={record.images[0]}
+            className="tw-w-[40px] tw-h-[40px] object-contain"
+            src={getFullPathMedia(record.image)}
             alt=""
           />
-          <span className="ml-2">{value}</span>
+          <span className="tw-ml-2">{value}</span>
         </Link>
       );
     },
   },
   {
-    title: "Stock",
-    dataIndex: "stock",
-    align: "center",
-    key: "stock",
-  },
-  {
-    title: "Price",
+    title: "Giá",
     dataIndex: "price",
     align: "center",
     key: "price",
+    width: "15%",
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
+    title: "Số lượng",
+    dataIndex: "stock",
     align: "center",
-    render(value, record, index) {
-      return (
-        <Tag
-          color={productStatusList[value].color}
-          className="w-[90px] text-center
-        "
-        >
-          {productStatusList[value].title}
-        </Tag>
-      );
+    key: "stock",
+    width: "15%",
+  },
+  {
+    title: "Ngày tạo",
+    dataIndex: "created_at",
+    align: "center",
+    key: "created_at",
+    width: "15%",
+    render(value) {
+      return formatTime(value);
     },
   },
   {
-    title: "Action",
+    title: "Hành động",
     key: "action",
     align: "center",
-    render(value, record, index) {
-      return (
-        <Button type="primary" className="la-edit-btn">
-          <EditOutlined />
-        </Button>
-      );
-    },
+    width: "15%",
   },
 ];
 
 const ProductList = () => {
-  const [data, setData] = useState<IProduct[]>([]);
+  const [dataList, setDataList] = useState<IProduct[]>([]);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(false);
+  const [openAddOrEdit, setOpenAddOrEdit] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<IProduct>();
 
   const onShowSizeChange = (current: number, size: number) => {
     setPageSize(size);
@@ -105,44 +107,62 @@ const ProductList = () => {
   const onChangePage = (page: number) => {
     setCurrentPage(page);
   };
-  let a = 1;
+
+  const handleEdit = (record: IProduct) => {
+    setOpenAddOrEdit(true);
+    setSelectedProduct(record);
+  };
 
   useEffect(() => {
     const apiGetList = async () => {
-      console.log("a: ", a++);
       setLoading(true);
       try {
         const config = {
           params: {
-            page: currentPage,
-            size: pageSize,
+            page: currentPage - 1,
+            limit: pageSize,
           },
         };
         const response = await repositories.product.getMany(config);
-        setData(response.data.data);
-        setTotal(response.data.pagination.total);
-        setLoading(false);
+        setDataList(response.data.dataList);
+        setTotal(response.data.totalRecords);
       } catch (err) {
+        handleError(err);
+      } finally {
         setLoading(false);
-        notification.error({
-          message: "error",
-        });
       }
     };
 
     apiGetList();
   }, [pageSize, currentPage]);
+
+  useEffect(() => {
+    columns[columns.length - 1].render = (value, record) => {
+      return (
+        <Button type="primary" className="la-edit-btn">
+          <EditOutlined onClick={() => handleEdit(record)} />
+        </Button>
+      );
+    };
+  }, []);
+
   return (
-    <MainPage title="Product List" routes={routes}>
-      <div className="product-list-page bg-white">
+    <PageWrap
+      routes={routes}
+      headerActionList={
+        <Button type="primary" onClick={() => setOpenAddOrEdit(true)}>
+          Thêm mới
+        </Button>
+      }>
+      <div className="tw-product-list-page bg-white">
         <Table
-          dataSource={data}
+          className="product-table"
+          dataSource={dataList}
           columns={columns}
           loading={loading}
           pagination={false}
-          rowKey="_id"
-        ></Table>
-        <div className="flex justify-end p-5">
+          rowKey="_id"></Table>
+        <div className="tw-flex justify-end p-5">
           <Pagination
             pageSize={pageSize}
             current={currentPage}
@@ -153,7 +173,13 @@ const ProductList = () => {
           />
         </div>
       </div>
-    </MainPage>
+
+      <AddOrEditProductDrawer
+        open={openAddOrEdit}
+        setOpen={setOpenAddOrEdit}
+        selectedProduct={selectedProduct}
+      />
+    </PageWrap>
   );
 };
 

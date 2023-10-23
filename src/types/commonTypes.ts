@@ -1,4 +1,9 @@
-import { AxiosResponse } from "axios";
+import {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 export enum ERequestStatus {
   PENDING,
@@ -16,9 +21,9 @@ export enum ESortDirect {
   ASCENDING,
 }
 
-export interface ErrorResponse {
-  code?: string;
-  message: string;
+export interface IErrorResponse extends AxiosError {
+  statusCode?: number;
+  statusText?: string;
 }
 
 export interface IRouteBreadCrumb {

@@ -1,8 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import { IProduct } from "src/types/productTypes";
-import { ErrorResponse } from "src/types/commonTypes";
-import axiosInstance from "src/utils/axisInstance";
+import { IErrorResponse } from "src/types/commonTypes";
+import axiosInstance from "src/utils/axiosInstance";
 
 const getMany = createAsyncThunk(
   "product/login",
@@ -14,7 +14,7 @@ const getMany = createAsyncThunk(
       );
       return res;
     } catch (err) {
-      const error = err as AxiosResponse<ErrorResponse>;
+      const error = err as AxiosResponse<IErrorResponse>;
       return thunkApi.rejectWithValue(error);
     }
   }

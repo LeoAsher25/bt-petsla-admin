@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { authActions } from "src/redux/auth/authSlice";
 import { RootState, useAppDispatch, useAppSelector } from "src/redux/store";
 import repositories from "src/repositories";
-import { ErrorResponse } from "src/types/commonTypes";
+import { IErrorResponse } from "src/types/commonTypes";
 import MenuList from "./MenuList";
 
 const { Header, Sider, Content } = Layout;
@@ -23,7 +23,7 @@ const MainLayout = (props: IProps) => {
   const dispatch = useAppDispatch();
   const handleLogout = () => {
     dispatch(authActions.handleLogout({}));
-    toast.success("Logout successfully");
+    toast.success("Đăng xuất thành công!");
   };
 
   useEffect(() => {
@@ -37,24 +37,25 @@ const MainLayout = (props: IProps) => {
         }
       };
 
-      fetchProfile();
+      // fetchProfile();
     }
   }, [accessToken]);
 
   return (
-    <Layout className="min-h-screen">
+    <Layout className="tw-min-h-screen">
       <Sider
         theme="light"
         trigger={null}
         collapsible
         collapsed={collapsed}
-        className="min-h-screen overflow-hidden"
-      >
-        <div className="logo h-[66px] p-3">
+        className="tw-min-h-screen tw-overflow-hidden">
+        <div className="logo tw-h-[66px] tw-p-3">
           <img
-            src={collapsed ? "/img/collapsed.png" : "/img/shopLogo.png"}
+            src={collapsed ? "/img/petsla.png" : "/img/shopLogo.png"}
             alt="Logo"
-            className="h-full mx-auto"
+            className={`tw-h-full tw-mx-auto tw-duration-200 ${
+              collapsed ? "tw-translate-x-2" : ""
+            }`}
           />
         </div>
         <MenuList />
@@ -62,17 +63,15 @@ const MainLayout = (props: IProps) => {
       <Layout className="site-layout">
         <Header
           className="site-layout-background"
-          style={{ padding: 0, backgroundColor: "white" }}
-        >
-          <div className="flex items-center justify-between">
+          style={{ padding: 0, backgroundColor: "white" }}>
+          <div className="tw-flex tw-items-center tw-justify-between">
             <div
-              className="  trigger cursor-pointer "
-              onClick={() => setCollapsed(!collapsed)}
-            >
+              className="trigger tw-cursor-pointer "
+              onClick={() => setCollapsed(!collapsed)}>
               {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </div>
 
-            <Button type="primary" className="mx-3" onClick={handleLogout}>
+            <Button type="primary" className="tw-mx-3" onClick={handleLogout}>
               Logout
             </Button>
           </div>
@@ -81,8 +80,7 @@ const MainLayout = (props: IProps) => {
           className="site-layout-background"
           style={{
             padding: "0.5rem 0.75rem",
-          }}
-        >
+          }}>
           {props.children}
         </Content>
       </Layout>

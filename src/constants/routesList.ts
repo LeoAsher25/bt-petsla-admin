@@ -6,6 +6,7 @@ const routesList = {
   DASHBOARD: "/dashboard",
   USER: "/users",
   PRODUCT: "/products",
+  ORDER: "/orders",
 };
 
 export default routesList;

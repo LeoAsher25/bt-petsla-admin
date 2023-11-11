@@ -5,6 +5,7 @@ import ProductDetail from "src/pages/product/ProductDetail";
 import ProductList from "src/pages/product/ProductList";
 import PrivatedRoute from "./PrivatedRoute";
 import AddNewProduct from "src/pages/product/AddNewProduct";
+import OrderList from "src/pages/order/OrderList";
 const MainRouters = () => (
   <Routes>
     <Route path="/" element={<PrivatedRoute />}>
@@ -18,6 +19,7 @@ const MainRouters = () => (
         element={<ProductDetail />}
       />
       <Route path={routesList.PRODUCT} element={<ProductList />} />
+      <Route path={routesList.ORDER} element={<OrderList />} />
     </Route>
 
     <Route path={routesList.LOGIN} element={<LoginPage />} />

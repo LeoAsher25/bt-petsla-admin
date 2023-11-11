@@ -1,5 +1,5 @@
-import { Button, Drawer, Form, Input, InputNumber, Select } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, Drawer, Form, Input, InputNumber, Select, Switch } from "antd";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import CustomUploadImage from "src/components/CustomUploadImage";
 import repositories from "src/repositories";
@@ -13,13 +13,17 @@ import { handleError } from "src/utils/handleError";
 interface AddOrEditProductDrawerProps {
   open: boolean;
   selectedProduct?: IProduct;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: (value: boolean) => void;
+  submitSuccess: () => void;
 }
 
 const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
   const [categoriesList, setCategoriesList] = useState<IProductCategory[]>([]);
 
+  const [form] = Form.useForm();
+
   const onClose = () => {
+    form.resetFields();
     props.setOpen(false);
   };
 
@@ -27,18 +31,34 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
     try {
       const formData = new FormData();
       formData.append("image", data.image);
-      const imageResponse = await repositories.image.post(formData, "upload", {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
 
-      await repositories.product.post({
-        ...data,
-        image: `images/products/${imageResponse.data.filename}`,
-      });
+      if (data.image !== props.selectedProduct?.image) {
+        const imageResponse = await repositories.image.post(
+          formData,
+          "upload",
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        await repositories.product.post({
+          ...data,
+          image: `images/products/${imageResponse.data.filename}`,
+        });
+      } else {
+        await repositories.product.patch(
+          {
+            ...data,
+          },
+          props.selectedProduct?._id as string
+        );
+      }
 
-      toast.success("Thêm mới sản phẩm thành công");
+      toast.success(
+        `${props.selectedProduct ? "Cật nhật" : "Thêm mới"} sản phẩm thành công`
+      );
+      props.submitSuccess();
     } catch (error) {
       handleError(error);
     } finally {
@@ -47,34 +67,56 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
   };
 
   useEffect(() => {
-    const getDataList = async () => {
-      try {
-        const response = await repositories.productCategory.getMany();
-        setCategoriesList(
-          response?.data?.map((item: IProductCategory) => ({
-            ...item,
-            label: item.name,
-            value: item._id,
-          }))
-        );
-      } catch (error) {
-        handleError(error);
-      }
-    };
     if (props.open) {
+      const getDataList = async () => {
+        try {
+          const response = await repositories.productCategory.getMany();
+          setCategoriesList(
+            response?.data?.map((item: IProductCategory) => ({
+              ...item,
+              label: item.name,
+              value: item._id,
+            }))
+          );
+        } catch (error) {
+          handleError(error);
+        }
+      };
       getDataList();
+
+      if (props.selectedProduct) {
+        form.setFieldsValue({
+          name: props.selectedProduct.name,
+          image: props.selectedProduct.image,
+          price: props.selectedProduct.price,
+          isSpecial: props.selectedProduct.isSpecial,
+          stock: props.selectedProduct.stock,
+          usesTypes: props.selectedProduct.usesTypes?.map((item) => item._id),
+          petType: props.selectedProduct.petType?._id,
+          description: props.selectedProduct.description,
+        });
+      }
     }
-  }, [props.open]);
+  }, [props.open, props.selectedProduct, form]);
+
+  useEffect(() => {
+    if (props.selectedProduct) {
+      form.setFieldsValue({
+        usesTypes: props.selectedProduct.usesTypes?.map((item) => item._id),
+        petType: props.selectedProduct.petType?._id,
+      });
+    }
+  }, [categoriesList, props.selectedProduct, form]);
 
   return (
     <Drawer
       closeIcon={false}
       width={600}
       open={props.open}
-      title="Thêm mới sản phẩm"
+      title={`${props.selectedProduct ? "Cật nhật" : "Thêm mới"} sản phẩm`}
       onClose={onClose}>
       <div>
-        <Form onFinish={handleSubmit} layout="vertical">
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             label="Hình ảnh"
             name="image"
@@ -84,7 +126,7 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
                 message: "Vui lòng tải hình ảnh sản phẩm!",
               },
             ]}>
-            <CustomUploadImage />
+            <CustomUploadImage value={props.selectedProduct?.image} />
           </Form.Item>
           <Form.Item
             label="Tên"
@@ -98,7 +140,7 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
             <Input placeholder="Tên sản phẩm" />
           </Form.Item>
 
-          <div className="tw-flex tw-items-center tw-gap-6">
+          <div className="tw-flex tw-items-start tw-gap-6">
             <Form.Item
               className="tw-flex-1"
               label="Giá"
@@ -134,7 +176,7 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
             </Form.Item>
           </div>
 
-          <div className="tw-flex tw-items-center tw-gap-6">
+          <div className="tw-flex tw-items-start tw-gap-6">
             <Form.Item
               className="tw-flex-1"
               label="Loại thú cưng"
@@ -157,7 +199,7 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
             <Form.Item
               className="tw-flex-1"
               label="Loại công dụng"
-              name="uses"
+              name="usesTypes"
               rules={[
                 {
                   required: true,
@@ -165,6 +207,7 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
                 },
               ]}>
               <Select
+                mode="multiple"
                 options={categoriesList.filter(
                   (item) => item.type === EIProductCategoryType.BY_USES
                 )}
@@ -173,6 +216,10 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
               />
             </Form.Item>
           </div>
+
+          <Form.Item label="Sản phẩm đặc biệt?" name="isSpecial">
+            <Switch defaultChecked={props.selectedProduct?.isSpecial} />
+          </Form.Item>
 
           <Form.Item
             label="Mô tả"
@@ -183,7 +230,7 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
                 message: "Vui lòng nhập mô tả sản phẩm!",
               },
             ]}>
-            <Input.TextArea rows={7} placeholder="Mô tả sản phẩm" />
+            <Input.TextArea rows={12} placeholder="Mô tả sản phẩm" />
           </Form.Item>
 
           <div className="tw-mt-4 tw-flex tw-gap-4 tw-justify-end">
@@ -191,7 +238,7 @@ const AddOrEditProductDrawer = (props: AddOrEditProductDrawerProps) => {
               Hủy
             </Button>
             <Button type="primary" htmlType="submit" className="tw-w-[100px]">
-              Thêm mới
+              {props.selectedProduct ? "Cập nhật" : "Thêm mới"}
             </Button>
           </div>
         </Form>

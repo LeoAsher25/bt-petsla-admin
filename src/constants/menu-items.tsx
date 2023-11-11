@@ -1,4 +1,9 @@
-import { HomeOutlined, SketchOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  HomeOutlined,
+  SketchOutlined,
+  UserOutlined,
+  TrophyOutlined,
+} from "@ant-design/icons";
 import routesList from "./routesList";
 
 export const menuItems = [
@@ -19,5 +24,11 @@ export const menuItems = [
     icon: <SketchOutlined />,
     to: routesList.PRODUCT,
     label: "Sản phẩm",
+  },
+  {
+    key: "4",
+    icon: <TrophyOutlined />,
+    to: routesList.ORDER,
+    label: "Đơn hàng",
   },
 ];

@@ -8,7 +8,9 @@ export interface IProduct {
   stock: number;
   created_at: string;
   updated_at: string;
-  categories: Object[];
+  usesTypes: IProductCategory[];
+  petType: IProductCategory;
+  isSpecial: boolean;
 }
 
 export interface ICartProduct {
@@ -53,20 +55,26 @@ export interface IOrder {
 }
 
 export interface IOrderItem {
-  _id: number | string;
-  name: string;
-  quantity: number;
-  price: string;
-  image: string;
-  product: number;
-  order: number;
+  productId?: string;
+  _id: string;
+  name?: string;
+  image?: string;
+  price?: number;
+  quantity?: number;
 }
 
 export enum EOrderStatus {
   PENDING,
   SHIPPING,
   DELIVERED,
-  CANCELLEDf,
+  CANCELLED,
+}
+
+export enum EPaymentStatus {
+  UNPAID,
+  PAID,
+  REFUNDING,
+  REFUNDED,
 }
 
 export enum EIProductCategoryType {

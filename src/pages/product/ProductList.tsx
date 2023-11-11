@@ -1,7 +1,7 @@
 import { EditOutlined } from "@ant-design/icons";
 import { Button, Pagination, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AddOrEditProductDrawer from "src/components/product/AddOrEditProductDrawer";
 import routesList from "src/constants/routesList";
@@ -35,7 +35,7 @@ const columns: ColumnsType<IProduct> = [
     key: "idReadable",
     align: "center",
     width: 100,
-    render(value, record, index) {
+    render(value) {
       return <span>#{value}</span>;
     },
   },
@@ -43,18 +43,16 @@ const columns: ColumnsType<IProduct> = [
     title: "Tên",
     dataIndex: "name",
     key: "name",
-    render(value, record, index) {
+    render(value, record) {
       return (
-        <Link
-          to={record._id as string}
-          className="tw-inline-flex tw-items-center">
+        <div className="tw-inline-flex tw-items-center">
           <img
             className="tw-w-[40px] tw-h-[40px] object-contain"
             src={getFullPathMedia(record.image)}
             alt=""
           />
           <span className="tw-ml-2">{value}</span>
-        </Link>
+        </div>
       );
     },
   },
@@ -109,38 +107,50 @@ const ProductList = () => {
   };
 
   const handleEdit = (record: IProduct) => {
-    setOpenAddOrEdit(true);
     setSelectedProduct(record);
+    setOpenAddOrEdit(true);
+  };
+
+  const handleToggleDrawer = (value: boolean) => {
+    setSelectedProduct(undefined);
+    setOpenAddOrEdit(value);
+  };
+
+  const getDataList = useCallback(async () => {
+    setLoading(true);
+    try {
+      const config = {
+        params: {
+          page: currentPage - 1,
+          limit: pageSize,
+        },
+      };
+      const response = await repositories.product.getMany(config);
+      setDataList(response.data.dataList);
+      setTotal(response.data.totalRecords);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, pageSize]);
+
+  const handleSubmitSuccess = () => {
+    getDataList();
   };
 
   useEffect(() => {
-    const apiGetList = async () => {
-      setLoading(true);
-      try {
-        const config = {
-          params: {
-            page: currentPage - 1,
-            limit: pageSize,
-          },
-        };
-        const response = await repositories.product.getMany(config);
-        setDataList(response.data.dataList);
-        setTotal(response.data.totalRecords);
-      } catch (err) {
-        handleError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    apiGetList();
-  }, [pageSize, currentPage]);
+    getDataList();
+  }, [pageSize, currentPage, getDataList]);
 
   useEffect(() => {
     columns[columns.length - 1].render = (value, record) => {
       return (
-        <Button type="primary" className="la-edit-btn">
-          <EditOutlined onClick={() => handleEdit(record)} />
+        <Button
+          type="primary"
+          className="la-edit-btn"
+          onClick={() => handleEdit(record)}>
+          <EditOutlined />
         </Button>
       );
     };
@@ -156,7 +166,7 @@ const ProductList = () => {
       }>
       <div className="tw-product-list-page bg-white">
         <Table
-          className="product-table"
+          className="product-table custom-table"
           dataSource={dataList}
           columns={columns}
           loading={loading}
@@ -176,8 +186,9 @@ const ProductList = () => {
 
       <AddOrEditProductDrawer
         open={openAddOrEdit}
-        setOpen={setOpenAddOrEdit}
+        setOpen={handleToggleDrawer}
         selectedProduct={selectedProduct}
+        submitSuccess={handleSubmitSuccess}
       />
     </PageWrap>
   );

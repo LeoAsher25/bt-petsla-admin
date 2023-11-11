@@ -38,7 +38,6 @@ axiosInstance.interceptors.response.use((res) => {
 async function handleRepositoryError(error: any) {
   const originalConfig = error.config;
   let customError: IErrorResponse = { ...error };
-  console.log("originalConfig: ", error, customError);
 
   if (error.response) {
     // Access token was expired

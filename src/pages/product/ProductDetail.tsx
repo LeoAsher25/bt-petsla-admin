@@ -5,7 +5,6 @@ import repositories from "src/repositories";
 const ProductDetail = () => {
   const { productId } = useParams();
 
-  console.log("detail: ", productId);
   useEffect(() => {
     const apiGet = async () => {
       try {

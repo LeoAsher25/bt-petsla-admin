@@ -30,3 +30,12 @@ export interface IRouteBreadCrumb {
   to: string;
   title: string;
 }
+
+export type EnumObjectType = Record<string, EnumObject>;
+
+export interface EnumObject {
+  text?: string;
+  value?: any;
+  key?: string;
+  color?: string;
+}

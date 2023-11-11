@@ -5,10 +5,11 @@ import {
   UploadFile,
   UploadProps,
 } from "antd/es/upload";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import type { UploadRequestOption } from "rc-upload/lib/interface";
+import getFullPathMedia from "src/utils/Media/getFullPathMedia";
 
 const getBase64 = (img: RcFile, callback: (url: string) => void) => {
   const reader = new FileReader();
@@ -29,8 +30,8 @@ const beforeUpload = (file: RcFile) => {
 };
 
 type CustomUploadImageProps = {
-  value?: RcFile;
-  onChange?: (value?: File) => void;
+  value?: RcFile | string;
+  onChange?: (value?: File | string) => void;
 };
 
 const CustomUploadImage: React.FC<CustomUploadImageProps> = ({
@@ -71,6 +72,12 @@ const CustomUploadImage: React.FC<CustomUploadImageProps> = ({
       <div style={{ marginTop: 8 }}>Tải ảnh lên</div>
     </div>
   );
+
+  useEffect(() => {
+    if (value && typeof value === "string") {
+      setImageUrl(getFullPathMedia(value) as string);
+    }
+  }, [value]);
 
   return (
     <Upload

@@ -6,8 +6,8 @@ export interface IProduct {
   price: number;
   image: string;
   stock: number;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   usesTypes: IProductCategory[];
   petType: IProductCategory;
   isSpecial: boolean;
@@ -19,39 +19,48 @@ export interface ICartProduct {
   image: string;
   price: number;
   quantity: number;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IOrderProduct {
-  product_id: number | string;
+  productId: number | string;
   quantity: number;
   price: number;
+  name: string;
+  image: string;
 }
 
 // type of order requested
 export interface IRequestedOrder {
   orderItems: IOrderProduct[];
-  number_phone: string;
+  fullName: string;
+  phoneNumber: string;
   address: string;
-  total_price: number;
-  note?: string;
+  note: string;
+  paymentMethod: EPaymentMethod;
+}
+
+export enum EPaymentMethod {
+  COD,
+  MOMO,
 }
 
 // type of order server send
 export interface IOrder {
+  _id: string;
+  idReadable: string;
+  fullName: string;
   address: string;
-  created_at: string | null;
-  delivered_at: string | null;
-  id: number | string;
-  is_delivered: boolean;
-  is_paid: boolean;
-  note?: string;
-  number_phone: string;
+  phoneNumber: string;
+  note: string;
+  totalCost: number;
+  paymentMethod: EPaymentMethod;
+  customerId: string;
+  orderStatus: EOrderStatus;
+  paymentStatus: EPaymentStatus;
   orderItems: IOrderItem[];
-  paid_at: string | null;
-  total_price: number;
-  user: number;
+  createdAt: string;
 }
 
 export interface IOrderItem {
@@ -84,6 +93,6 @@ export enum EIProductCategoryType {
 
 export interface IProductCategory {
   _id?: string;
-  name: string;
-  type: EIProductCategoryType;
+  name?: string;
+  type?: EIProductCategoryType;
 }

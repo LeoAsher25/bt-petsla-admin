@@ -2,13 +2,14 @@ import { EditOutlined } from "@ant-design/icons";
 import { Button, Pagination, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import routesList from "src/constants/routesList";
 import PageWrap from "src/layouts/PageWrap";
 import repositories from "src/repositories";
 import { IRouteBreadCrumb } from "src/types/commonTypes";
 import { IOrder } from "src/types/productTypes";
 import formatTime from "src/utils/formatTime";
-import getEnumObject from "src/utils/getEnumText";
+import getEnumObject from "src/utils/enumObject";
 import { handleError } from "src/utils/handleError";
 
 const routes: IRouteBreadCrumb[] = [
@@ -33,9 +34,11 @@ const columns: ColumnsType<IOrder> = [
     key: "idReadable",
     align: "center",
     width: 100,
-    render(value) {
-      return <span>#{value}</span>;
-    },
+    render: (value, record) => (
+      <Link to={`${routesList.ORDER}/${record._id}`}>
+        <span>#{value}</span>
+      </Link>
+    ),
   },
   {
     title: "Ngày đặt hàng",
@@ -80,12 +83,12 @@ const columns: ColumnsType<IOrder> = [
       return getEnumObject.getPaymentStatus(value)?.text;
     },
   },
-  {
-    title: "Hành động",
-    key: "action",
-    align: "center",
-    width: "10%",
-  },
+  // {
+  //   title: "Hành động",
+  //   key: "action",
+  //   align: "center",
+  //   width: "10%",
+  // },
 ];
 
 const OrderList = () => {
@@ -94,8 +97,6 @@ const OrderList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(false);
-  const [openAddOrEdit, setOpenAddOrEdit] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<IOrder>();
 
   const onShowSizeChange = (current: number, size: number) => {
     setPageSize(size);
@@ -104,16 +105,6 @@ const OrderList = () => {
 
   const onChangePage = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const handleEdit = (record: IOrder) => {
-    setSelectedOrder(record);
-    setOpenAddOrEdit(true);
-  };
-
-  const handleToggleDrawer = (value: boolean) => {
-    setSelectedOrder(undefined);
-    setOpenAddOrEdit(value);
   };
 
   const getDataList = useCallback(async () => {
@@ -143,18 +134,18 @@ const OrderList = () => {
     getDataList();
   }, [pageSize, currentPage, getDataList]);
 
-  useEffect(() => {
-    columns[columns.length - 1].render = (value, record) => {
-      return (
-        <Button
-          type="primary"
-          className="la-edit-btn"
-          onClick={() => handleEdit(record)}>
-          <EditOutlined />
-        </Button>
-      );
-    };
-  }, []);
+  // useEffect(() => {
+  //   columns[columns.length - 1].render = (value, record) => {
+  //     return (
+  //       <Button
+  //         type="primary"
+  //         className="la-edit-btn"
+  //         onClick={() => handleEdit(record)}>
+  //         <EditOutlined />
+  //       </Button>
+  //     );
+  //   };
+  // }, []);
 
   return (
     <PageWrap routes={routes}>

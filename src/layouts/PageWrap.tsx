@@ -15,11 +15,11 @@ const PageWrap = (props: IPageWrapProps) => {
     document.title = props.title
       ? props.title
       : props.routes[props.routes.length - 1].title;
-  }, []);
+  }, [props.title, props.routes]);
   const location = useLocation();
   return (
     <div className="page-wrap">
-      <div className="page-wrap-header tw-p-3 tw-flex tw-items-center tw-justify-between">
+      <div className="page-wrap-header tw-flex tw-items-center tw-justify-between">
         <div className="tw-flex tw-flex-col">
           <div className="tw-text-lg tw-font-semibold">
             {props.title

@@ -3,18 +3,102 @@
 @tailwind utilities;
 
 @import "./assets/css/index.scss";
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap");
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f6f9fc;
+
+  * {
+    font-family: "Nunito", sans-serif;
+    font-size: 16px;
+  }
+
+  .ant-layout {
+    background-color: #f6f9fc !important;
+
+    .ant-layout-header {
+      box-shadow: 0 1px 15px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .ant-layout-content {
+      max-height: calc(100vh - 64px);
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      padding: 1rem !important;
+    }
+  }
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.detail-order-wrap {
+  .detail-order-item {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    transition: box-shadow 0.2s ease-in-out;
+
+    .detail-order-item-link {
+      padding: 16px;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #aaaaaa99;
+    }
+
+    &:hover {
+      box-shadow: inset 2000px 2000px rgba(0, 0, 0, 0.05);
+    }
+
+    .product-info {
+      display: flex;
+      color: black;
+      flex: 1;
+
+      .product-img {
+        width: 72px;
+        min-width: 72px;
+        padding-top: 72px;
+        margin: 0 16px 0px;
+        height: 100%;
+        background-size: cover;
+      }
+
+      .product-description {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .product-name {
+          font-weight: 600;
+          font-size: 16px;
+          line-height: 16px;
+          display: -webkit-box;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+        }
+
+        .product-price {
+          font-size: 12px;
+        }
+
+        .product-total-price {
+          font-size: 14px;
+          font-weight: 600;
+          color: #e99746;
+        }
+      }
+    }
+  }
 }

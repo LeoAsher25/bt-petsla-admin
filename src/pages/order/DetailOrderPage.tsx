@@ -1,15 +1,15 @@
-import { Button, Form, FormInstance, Select, Tag } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { Button, Form, Select } from "antd";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import CustomTag from "src/components/CustomTag";
 import routesList from "src/constants/routesList";
 import PageWrap from "src/layouts/PageWrap";
 import repositories from "src/repositories";
 import { IRouteBreadCrumb } from "src/types/commonTypes";
-import { IOrder, IOrderItem, IRequestedOrder } from "src/types/productTypes";
+import { IOrder, IOrderItem } from "src/types/productTypes";
 import getFullPathMedia from "src/utils/Media/getFullPathMedia";
-import formatTime from "src/utils/formatTime";
 import getEnumObject, { enumObjectList } from "src/utils/enumObject";
+import formatTime from "src/utils/formatTime";
 import { handleError } from "src/utils/handleError";
 
 const routes: IRouteBreadCrumb[] = [
@@ -18,12 +18,12 @@ const routes: IRouteBreadCrumb[] = [
     title: "Trang chủ",
   },
   {
-    to: "",
+    to: routesList.ORDER,
     title: "Đơn hàng",
   },
   {
-    to: routesList.ORDER,
-    title: "Danh sách đơn hàng",
+    to: "",
+    title: "Chi tiết đơn hàng",
   },
 ];
 
@@ -35,32 +35,6 @@ const DetailOrderPage = () => {
 
   const [currentOrder, setCurrentOrder] = useState<IOrder>();
   const [isEdit, setIsEdit] = useState(false);
-
-  const handleBuyAgainClick = async () => {
-    if (currentOrder) {
-      try {
-        const order: IRequestedOrder = {
-          orderItems: currentOrder?.orderItems.map((product: IOrderItem) => ({
-            productId: product._id,
-            quantity: product.quantity!,
-            name: product.name!,
-            image: product.image!,
-            price: Number(product.price),
-          })),
-          phoneNumber: currentOrder?.phoneNumber || "",
-          address: currentOrder?.address || "",
-          note: currentOrder?.note!,
-          fullName: currentOrder?.fullName!,
-          paymentMethod: currentOrder?.paymentMethod!,
-        };
-
-        const response = await repositories.order.create(order);
-        return response.data;
-      } catch (error) {
-        handleError(error);
-      }
-    }
-  };
 
   const handleEditCancel = () => {
     setIsEdit(false);
@@ -108,7 +82,7 @@ const DetailOrderPage = () => {
       headerActionList={
         isEdit ? (
           <div className="tw-flex tw-items-center tw-gap-4">
-            <Button danger onClick={() => setIsEdit(false)}>
+            <Button danger onClick={handleEditCancel}>
               Hủy
             </Button>
 

@@ -1,31 +1,14 @@
-import { EditOutlined } from "@ant-design/icons";
-import { Button, Pagination, Table } from "antd";
+import { Pagination, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import CustomTag from "src/components/CustomTag";
 import routesList from "src/constants/routesList";
-import PageWrap from "src/layouts/PageWrap";
 import repositories from "src/repositories";
-import { IRouteBreadCrumb } from "src/types/commonTypes";
-import { IOrder } from "src/types/productTypes";
-import formatTime from "src/utils/formatTime";
+import { EOrderStatus, IOrder } from "src/types/productTypes";
 import getEnumObject from "src/utils/enumObject";
+import formatTime from "src/utils/formatTime";
 import { handleError } from "src/utils/handleError";
-
-const routes: IRouteBreadCrumb[] = [
-  {
-    to: routesList.HOME,
-    title: "Trang chủ",
-  },
-  {
-    to: "",
-    title: "Đơn hàng",
-  },
-  {
-    to: routesList.ORDER,
-    title: "Danh sách đơn hàng",
-  },
-];
 
 const columns: ColumnsType<IOrder> = [
   {
@@ -70,17 +53,27 @@ const columns: ColumnsType<IOrder> = [
     key: "orderStatus",
     width: "15%",
     render(value) {
-      return getEnumObject.getOrderStatus(value)?.text;
+      return (
+        <CustomTag
+          color={getEnumObject.getOrderStatus(value)?.color}
+          text={getEnumObject.getOrderStatus(value)?.text}
+        />
+      );
     },
   },
   {
     title: "TT thanh toán",
-    dataIndex: "orderStatus",
+    dataIndex: "paymentStatus",
     align: "center",
-    key: "orderStatus",
+    key: "paymentStatus",
     width: "15%",
     render(value) {
-      return getEnumObject.getPaymentStatus(value)?.text;
+      return (
+        <CustomTag
+          color={getEnumObject.getPaymentStatus(value)?.color}
+          text={getEnumObject.getPaymentStatus(value)?.text}
+        />
+      );
     },
   },
   // {
@@ -90,8 +83,11 @@ const columns: ColumnsType<IOrder> = [
   //   width: "10%",
   // },
 ];
+interface IOrderListProps {
+  orderStatus?: EOrderStatus;
+}
 
-const OrderList = () => {
+const OrderList = ({ orderStatus }: IOrderListProps) => {
   const [dataList, setDataList] = useState<IOrder[]>([]);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -114,6 +110,8 @@ const OrderList = () => {
         params: {
           page: currentPage - 1,
           limit: pageSize,
+          isAdmin: true,
+          orderStatus,
         },
       };
       const response = await repositories.order.getMany(config);
@@ -124,7 +122,7 @@ const OrderList = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, orderStatus]);
 
   const handleSubmitSuccess = () => {
     getDataList();
@@ -148,34 +146,25 @@ const OrderList = () => {
   // }, []);
 
   return (
-    <PageWrap routes={routes}>
-      <div className="tw-product-list-page bg-white">
-        <Table
-          className=" custom-table"
-          dataSource={dataList}
-          columns={columns}
-          loading={loading}
-          pagination={false}
-          rowKey="_id"></Table>
-        <div className="tw-flex justify-end p-5">
-          <Pagination
-            pageSize={pageSize}
-            current={currentPage}
-            total={total}
-            showSizeChanger
-            onChange={onChangePage}
-            onShowSizeChange={onShowSizeChange}
-          />
-        </div>
+    <div className="bg-white">
+      <Table
+        className=" custom-table"
+        dataSource={dataList}
+        columns={columns}
+        loading={loading}
+        pagination={false}
+        rowKey="_id"></Table>
+      <div className="tw-flex justify-end p-5">
+        <Pagination
+          pageSize={pageSize}
+          current={currentPage}
+          total={total}
+          showSizeChanger
+          onChange={onChangePage}
+          onShowSizeChange={onShowSizeChange}
+        />
       </div>
-
-      {/* <AddOrEditOrderDrawer
-        open={openAddOrEdit}
-        setOpen={handleToggleDrawer}
-        selectedOrder={selectedOrder}
-        submitSuccess={handleSubmitSuccess}
-      /> */}
-    </PageWrap>
+    </div>
   );
 };
 

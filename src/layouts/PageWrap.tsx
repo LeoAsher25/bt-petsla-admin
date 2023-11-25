@@ -32,10 +32,10 @@ const PageWrap = (props: IPageWrapProps) => {
                 <Link
                   to={item.to}
                   className={
-                    !item.to
-                      ? "hover:!tw-bg-transparent hover:!tw-text-[#00000073] tw-cursor-default"
-                      : item.to === location.pathname
+                    index === props.routes.length - 1
                       ? "!tw-text-[#1677ffaa] hover:!tw-bg-transparent tw-cursor-default tw-pointer-events-none"
+                      : !item.to
+                      ? "hover:!tw-bg-transparent hover:!tw-text-[#00000073] tw-cursor-default"
                       : ""
                   }>
                   {item.title}

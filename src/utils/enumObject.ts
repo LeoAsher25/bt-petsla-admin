@@ -6,25 +6,25 @@ const orderStatus: EnumObject[] = [
   {
     text: "Chờ xác nhận",
     value: EOrderStatus.PENDING,
-    key: "UNPAID",
+    key: "PENDING",
     color: "#d46b08",
   },
   {
     text: "Đang giao",
     value: EOrderStatus.SHIPPING,
-    key: "PAID",
+    key: "SHIPPING",
     color: "#0958d9",
   },
   {
     text: "Đã giao",
     value: EOrderStatus.DELIVERED,
-    key: "REFUNDING",
+    key: "DELIVERED",
     color: "#389e0d",
   },
   {
     text: "Đã hủy",
     value: EOrderStatus.CANCELLED,
-    key: "REFUNDED",
+    key: "CANCELLED",
     color: "#cf1322",
   },
 ];

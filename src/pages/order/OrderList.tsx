@@ -41,6 +41,12 @@ const columns: ColumnsType<IOrder> = [
     width: "10%",
   },
   {
+    title: "Họ tên",
+    dataIndex: "fullName",
+    align: "left",
+    key: "fullName",
+  },
+  {
     title: "Địa chỉ",
     dataIndex: "address",
     align: "left",

@@ -38,7 +38,7 @@ const LoginPage = () => {
 
   return (
     <div className="login-page tw-h-screen tw-w-screen tw-flex tw-items-center tw-justify-center -tw-mt-16">
-      <Card title="Login" bordered={false} className="tw-w-[350px]">
+      <Card title="Đăng nhập" bordered={false} className="tw-w-[350px]">
         <Form onFinish={handleLogin} layout="vertical">
           <Form.Item
             label="Email"

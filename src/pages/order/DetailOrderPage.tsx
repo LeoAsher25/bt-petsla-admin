@@ -91,9 +91,14 @@ const DetailOrderPage = () => {
             </Button>
           </div>
         ) : (
-          <Button type="primary" onClick={() => setIsEdit(true)}>
-            Chỉnh sửa
-          </Button>
+          <div className="tw-flex tw-items-center tw-gap-4">
+            <Button type="primary" ghost onClick={() => navigate(-1)}>
+              Quay lại
+            </Button>
+            <Button type="primary" onClick={() => setIsEdit(true)}>
+              Chỉnh sửa
+            </Button>
+          </div>
         )
       }>
       <Form form={form} name="control-ref">

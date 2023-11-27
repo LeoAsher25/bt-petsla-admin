@@ -7,11 +7,12 @@ import AddNewProduct from "src/pages/product/AddNewProduct";
 import ProductDetail from "src/pages/product/ProductDetail";
 import ProductList from "src/pages/product/ProductList";
 import PrivatedRoute from "./PrivatedRoute";
+import UserPage from "src/pages/user/UserPage";
 const MainRouters = () => (
   <Routes>
     <Route path="/" element={<PrivatedRoute />}>
       <Route path={routesList.HOME} element={<div>HOME </div>} />
-      <Route path={routesList.USER} element={<div>USER </div>} />
+      <Route path={routesList.USER} element={<UserPage />} />
 
       {/* products page */}
       <Route path={`${routesList.PRODUCT}/add`} element={<AddNewProduct />} />

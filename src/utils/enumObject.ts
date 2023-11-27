@@ -48,7 +48,7 @@ const paymentStatus: EnumObject[] = [
     color: "#13c2c2",
   },
   {
-    text: "Đã thanh toán",
+    text: "Đã hoàn tiền",
     value: EPaymentStatus.REFUNDED,
     key: "REFUNDED",
     color: "#722ed1",

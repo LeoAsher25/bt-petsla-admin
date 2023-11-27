@@ -1,3 +1,4 @@
+import { EGender, EUserRole } from "src/types/authTypes";
 import { EPaymentMethod } from "../types/productTypes";
 import { EnumObject, EnumObjectType } from "src/types/commonTypes";
 import { EOrderStatus, EPaymentStatus } from "src/types/productTypes";
@@ -66,10 +67,38 @@ const paymentMethods: EnumObject[] = [
   },
 ];
 
+const genderList: EnumObject[] = [
+  {
+    text: "Nam",
+    value: EGender.MALE,
+  },
+  {
+    text: "Nữ",
+    value: EGender.FEMALE,
+  },
+  {
+    text: "Khác",
+    value: EGender.OTHER,
+  },
+];
+
+const userRoleList: EnumObject[] = [
+  {
+    text: "Khách hàng",
+    value: EUserRole.CUSTOMER,
+  },
+  {
+    text: "Admin",
+    value: EUserRole.ADMIN,
+  },
+];
+
 export const enumObjectList = {
   orderStatus,
   paymentStatus,
   paymentMethods,
+  genderList,
+  userRoleList,
 };
 
 const getEnumObject = {
@@ -83,6 +112,14 @@ const getEnumObject = {
 
   getPaymentMethod(value: EPaymentMethod): EnumObject | undefined {
     return paymentMethods.find((item) => item.value === value);
+  },
+
+  getUserRole(value: EPaymentMethod): EnumObject | undefined {
+    return userRoleList.find((item) => item.value === value);
+  },
+
+  getGender(value: EPaymentMethod): EnumObject | undefined {
+    return genderList.find((item) => item.value === value);
   },
 };
 export default getEnumObject;

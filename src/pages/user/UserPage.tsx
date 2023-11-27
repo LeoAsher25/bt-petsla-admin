@@ -1,13 +1,15 @@
-import { EditOutlined } from "@ant-design/icons";
-import { Button, Pagination, Table } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Button, Modal, Pagination, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import AddOrEditUserDrawer from "src/components/user/AddOrEditUserDrawer";
 import routesList from "src/constants/routesList";
 import PageWrap from "src/layouts/PageWrap";
 import repositories from "src/repositories";
 import { IUser } from "src/types/authTypes";
 import { IRouteBreadCrumb } from "src/types/commonTypes";
+import getEnumObject from "src/utils/enumObject";
 
 import formatTime from "src/utils/formatTime";
 import { handleError } from "src/utils/handleError";
@@ -42,14 +44,21 @@ const columns: ColumnsType<IUser> = [
     title: "Tên",
     dataIndex: "firstName",
     key: "firstName",
+    width: "15%",
     render(value, record) {
-      console.log("record: ", record);
       return (
         <div className="tw-inline-flex tw-items-center">
           {`${record.lastName} ${record.firstName}`}
         </div>
       );
     },
+  },
+  {
+    title: "Email",
+    dataIndex: "email",
+    align: "left",
+    key: "email",
+    width: "20%",
   },
   {
     title: "Số điện thoại",
@@ -59,18 +68,31 @@ const columns: ColumnsType<IUser> = [
     width: "15%",
   },
   {
+    title: "Giới tính",
+    dataIndex: "gender",
+    align: "center",
+    key: "gender",
+    width: "10%",
+    render(value) {
+      return getEnumObject.getGender(value)?.text;
+    },
+  },
+  {
     title: "Vai trò",
     dataIndex: "role",
     align: "center",
     key: "role",
-    width: "15%",
+    width: "10%",
+    render(value) {
+      return getEnumObject.getUserRole(value)?.text;
+    },
   },
   {
     title: "Ngày tạo",
     dataIndex: "createdAt",
     align: "center",
     key: "createdAt",
-    width: "15%",
+    width: "10%",
     render(value) {
       return formatTime(value);
     },
@@ -79,7 +101,7 @@ const columns: ColumnsType<IUser> = [
     title: "Hành động",
     key: "action",
     align: "center",
-    width: "15%",
+    width: "10%",
   },
 ];
 
@@ -90,7 +112,8 @@ const UserPage = () => {
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(false);
   const [openAddOrEdit, setOpenAddOrEdit] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<IUser>();
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<IUser>();
 
   const onShowSizeChange = (current: number, size: number) => {
     setPageSize(size);
@@ -102,12 +125,12 @@ const UserPage = () => {
   };
 
   const handleEdit = (record: IUser) => {
-    setSelectedProduct(record);
+    setSelectedUser(record);
     setOpenAddOrEdit(true);
   };
 
   const handleToggleDrawer = (value: boolean) => {
-    setSelectedProduct(undefined);
+    setSelectedUser(undefined);
     setOpenAddOrEdit(value);
   };
 
@@ -134,6 +157,22 @@ const UserPage = () => {
     getDataList();
   };
 
+  const handleDeleteClick = (user: IUser) => {
+    setSelectedUser(user);
+    setOpenConfirmDelete(true);
+  };
+
+  const handleDeleteOk = async () => {
+    try {
+      await repositories.user.delete(selectedUser?._id!);
+      getDataList();
+      toast.success("Xóa người dùng thành công");
+      setOpenConfirmDelete(false);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   useEffect(() => {
     getDataList();
   }, [pageSize, currentPage, getDataList]);
@@ -141,12 +180,22 @@ const UserPage = () => {
   useEffect(() => {
     columns[columns.length - 1].render = (value, record) => {
       return (
-        <Button
-          type="primary"
-          className="la-edit-btn"
-          onClick={() => handleEdit(record)}>
-          <EditOutlined />
-        </Button>
+        <div className="tw-flex tw-items-center tw-gap-4 tw-justify-center">
+          <Button
+            type="primary"
+            danger
+            className=""
+            onClick={() => handleDeleteClick(record)}>
+            <DeleteOutlined />
+          </Button>
+
+          <Button
+            type="primary"
+            className=""
+            onClick={() => handleEdit(record)}>
+            <EditOutlined />
+          </Button>
+        </div>
       );
     };
   }, []);
@@ -182,9 +231,20 @@ const UserPage = () => {
       <AddOrEditUserDrawer
         open={openAddOrEdit}
         setOpen={handleToggleDrawer}
-        selectedProduct={selectedProduct}
+        selectedUser={selectedUser!}
         submitSuccess={handleSubmitSuccess}
       />
+
+      <Modal
+        title="Xác nhận xóa"
+        open={openConfirmDelete}
+        onOk={handleDeleteOk}
+        centered
+        cancelText="Không"
+        okText="Xác nhận"
+        onCancel={() => setOpenConfirmDelete(false)}>
+        <p>Bạn có chắc sẽ xóa không?</p>
+      </Modal>
     </PageWrap>
   );
 };

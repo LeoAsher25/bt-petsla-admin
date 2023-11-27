@@ -1,24 +1,19 @@
-import { Button, Drawer, Form, Input, InputNumber, Select } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Drawer, Form, Input, Select } from "antd";
+import { useEffect } from "react";
 import { toast } from "react-toastify";
 import repositories from "src/repositories";
 import { IUser } from "src/types/authTypes";
-import {
-  EIProductCategoryType,
-  IProductCategory,
-} from "src/types/productTypes";
+import { enumObjectList } from "src/utils/enumObject";
 import { handleError } from "src/utils/handleError";
 
 interface AddOrEditUserDrawerProps {
   open: boolean;
-  selectedProduct?: IUser;
+  selectedUser?: IUser;
   setOpen: (value: boolean) => void;
   submitSuccess: () => void;
 }
 
 const AddOrEditUserDrawer = (props: AddOrEditUserDrawerProps) => {
-  const [categoriesList, setCategoriesList] = useState<IProductCategory[]>([]);
-
   const [form] = Form.useForm();
 
   const onClose = () => {
@@ -28,57 +23,44 @@ const AddOrEditUserDrawer = (props: AddOrEditUserDrawerProps) => {
 
   const handleSubmit = async (data: any) => {
     try {
-      const formData = new FormData();
-      formData.append("image", data.image);
-
+      if (props.selectedUser) {
+        await repositories.user.patch(data, props.selectedUser?._id!);
+      } else {
+        await repositories.user.create(data);
+      }
       toast.success(
-        `${
-          props.selectedProduct ? "Cật nhật" : "Thêm mới"
-        } người dùng thành công`
+        `${props.selectedUser ? "Cật nhật" : "Thêm mới"} người dùng thành công`
       );
       props.submitSuccess();
+      onClose();
     } catch (error) {
       handleError(error);
-    } finally {
-      onClose();
     }
   };
 
   useEffect(() => {
     if (props.open) {
-      const getDataList = async () => {
-        try {
-          const response = await repositories.productCategory.getMany();
-          setCategoriesList(
-            response?.data?.map((item: IProductCategory) => ({
-              ...item,
-              label: item.name,
-              value: item._id,
-            }))
-          );
-        } catch (error) {
-          handleError(error);
-        }
-      };
-      getDataList();
-
-      if (props.selectedProduct) {
+      if (props.selectedUser) {
         form.setFieldsValue({
-          firstName: props.selectedProduct.firstName,
-          lastName: props.selectedProduct.lastName,
+          firstName: props.selectedUser.firstName,
+          lastName: props.selectedUser.lastName,
+          phoneNumber: props.selectedUser.phoneNumber,
+          role: props.selectedUser.role,
+          address: props.selectedUser.address,
+          email: props.selectedUser.email,
+          gender: props.selectedUser.gender,
+          password: props.selectedUser.password,
         });
       }
     }
-  }, [props.open, props.selectedProduct, form]);
-
-  useEffect(() => {}, [categoriesList, props.selectedProduct, form]);
+  }, [props.open, props.selectedUser, form]);
 
   return (
     <Drawer
       closeIcon={false}
       width={600}
       open={props.open}
-      title={`${props.selectedProduct ? "Cật nhật" : "Thêm mới"} người dùng`}
+      title={`${props.selectedUser ? "Cật nhật" : "Thêm mới"} người dùng`}
       onClose={onClose}>
       <div>
         <Form form={form} onFinish={handleSubmit} layout="vertical">
@@ -110,93 +92,107 @@ const AddOrEditUserDrawer = (props: AddOrEditUserDrawerProps) => {
             </Form.Item>
           </div>
 
+          <Form.Item
+            className="tw-flex-1"
+            label="Email"
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập email!",
+              },
+            ]}>
+            <Input
+              disabled={!!props.selectedUser}
+              className="tw-w-full"
+              min={1}
+              placeholder="Email"
+            />
+          </Form.Item>
+
+          <Form.Item
+            className="tw-flex-1"
+            label="Số điện thoại"
+            name="phoneNumber"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập số điện thoại!",
+              },
+            ]}>
+            <Input className="tw-w-full" min={1} placeholder="Số điện thoại" />
+          </Form.Item>
+
+          <Form.Item
+            className="tw-flex-1"
+            label="Mật khẩu"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập mật khẩu!",
+              },
+            ]}>
+            <Input
+              type="password"
+              className="tw-w-full"
+              min={1}
+              placeholder="Mật khẩu"
+            />
+          </Form.Item>
+
           <div className="tw-flex tw-items-start tw-gap-6">
             <Form.Item
               className="tw-flex-1"
-              label="Giá"
-              name="price"
+              label="Giới tính"
+              name="gender"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập giá người dùng!",
-                },
-              ]}>
-              <InputNumber
-                className="tw-w-full"
-                min={1}
-                placeholder="Giá người dùng"
-              />
-            </Form.Item>
-
-            <Form.Item
-              className="tw-flex-1"
-              label="Số lượng"
-              name="stock"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập số lượng người dùng!",
-                },
-              ]}>
-              <InputNumber
-                className="tw-w-full"
-                min={1}
-                placeholder="Số lượng người dùng"
-              />
-            </Form.Item>
-          </div>
-
-          <div className="tw-flex tw-items-start tw-gap-6">
-            <Form.Item
-              className="tw-flex-1"
-              label="Loại thú cưng"
-              name="petType"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn loại thú cưng!",
+                  message: "Vui lòng chọn giới tính!",
                 },
               ]}>
               <Select
-                options={categoriesList.filter(
-                  (item) => item.type === EIProductCategoryType.BY_PET
-                )}
-                className="tw-w-full"
-                placeholder="Loại thú cưng"
+                options={enumObjectList.genderList.map((item) => ({
+                  ...item,
+                  label: item.text,
+                }))}
+                className="tw-w-full tw-h-[38px]"
+                placeholder="Giới tính"
               />
             </Form.Item>
 
             <Form.Item
               className="tw-flex-1"
-              label="Loại công dụng"
-              name="usesTypes"
+              label="Vai trò"
+              name="role"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn loại công dụng!",
+                  message: "Vui lòng chọn vai trò!",
                 },
               ]}>
               <Select
-                mode="multiple"
-                options={categoriesList.filter(
-                  (item) => item.type === EIProductCategoryType.BY_USES
-                )}
-                className="tw-w-full"
-                placeholder="Loại công dụng người dùng"
+                options={enumObjectList.userRoleList.map((item) => ({
+                  ...item,
+                  label: item.text,
+                }))}
+                className="tw-w-full tw-h-[38px]"
+                placeholder="Vai trò"
               />
             </Form.Item>
           </div>
 
           <Form.Item
-            label="Mô tả"
-            name="description"
+            label="Địa chỉ"
+            name="address"
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập mô tả người dùng!",
+                message: "Vui lòng nhập địa chỉ!",
               },
             ]}>
-            <Input.TextArea rows={12} placeholder="Mô tả người dùng" />
+            <Input.TextArea rows={4} placeholder="Địa chỉ" />
           </Form.Item>
 
           <div className="tw-mt-4 tw-flex tw-gap-4 tw-justify-end">
@@ -204,7 +200,7 @@ const AddOrEditUserDrawer = (props: AddOrEditUserDrawerProps) => {
               Hủy
             </Button>
             <Button type="primary" htmlType="submit" className="tw-w-[100px]">
-              {props.selectedProduct ? "Cập nhật" : "Thêm mới"}
+              {props.selectedUser ? "Cập nhật" : "Thêm mới"}
             </Button>
           </div>
         </Form>

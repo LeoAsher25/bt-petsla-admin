@@ -34,16 +34,18 @@ export interface IUser {
   username: string;
   name: string;
   email: string;
+  role?: EUserRole;
 
-  id?: number;
+  _id?: string;
   gender?: EGender;
   isAdmin?: boolean;
   address?: string;
   phoneNumber?: string;
+  password?: string;
 }
 
 export interface IOrderInfo {
-  id?: number;
+  _id?: string;
   name: string;
 
   address: string;
@@ -56,4 +58,10 @@ export enum EGender {
   FEMALE,
   OTHER,
   UNKNOWN,
+}
+
+export enum EUserRole {
+  ADMIN = "ADMIN",
+  SELLER = "SELLER",
+  CUSTOMER = "CUSTOMER",
 }

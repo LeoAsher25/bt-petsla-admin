@@ -1,8 +1,9 @@
-import { EditOutlined } from "@ant-design/icons";
-import { Button, Pagination, Table } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Button, Modal, Pagination, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import AddOrEditProductDrawer from "src/components/product/AddOrEditProductDrawer";
 import routesList from "src/constants/routesList";
 import PageWrap from "src/layouts/PageWrap";
@@ -96,6 +97,7 @@ const ProductList = () => {
   const [loading, setLoading] = useState(false);
   const [openAddOrEdit, setOpenAddOrEdit] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<IProduct>();
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
 
   const onShowSizeChange = (current: number, size: number) => {
     setPageSize(size);
@@ -139,6 +141,22 @@ const ProductList = () => {
     getDataList();
   };
 
+  const handleDeleteClick = (user: IProduct) => {
+    setSelectedProduct(user);
+    setOpenConfirmDelete(true);
+  };
+
+  const handleDeleteOk = async () => {
+    try {
+      await repositories.product.delete(selectedProduct?._id!);
+      getDataList();
+      toast.success("Xóa sản phẩm thành công");
+      setOpenConfirmDelete(false);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   useEffect(() => {
     getDataList();
   }, [pageSize, currentPage, getDataList]);
@@ -146,12 +164,21 @@ const ProductList = () => {
   useEffect(() => {
     columns[columns.length - 1].render = (value, record) => {
       return (
-        <Button
-          type="primary"
-          className="la-edit-btn"
-          onClick={() => handleEdit(record)}>
-          <EditOutlined />
-        </Button>
+        <div className="tw-flex tw-items-center tw-gap-4 tw-justify-center">
+          <Button
+            type="primary"
+            danger
+            className=""
+            onClick={() => handleDeleteClick(record)}>
+            <DeleteOutlined />
+          </Button>
+          <Button
+            type="primary"
+            className=""
+            onClick={() => handleEdit(record)}>
+            <EditOutlined />
+          </Button>
+        </div>
       );
     };
   }, []);
@@ -190,6 +217,17 @@ const ProductList = () => {
         selectedProduct={selectedProduct}
         submitSuccess={handleSubmitSuccess}
       />
+
+      <Modal
+        title="Xác nhận xóa"
+        open={openConfirmDelete}
+        onOk={handleDeleteOk}
+        centered
+        cancelText="Không"
+        okText="Xác nhận"
+        onCancel={() => setOpenConfirmDelete(false)}>
+        <p>Bạn có chắc sẽ xóa không?</p>
+      </Modal>
     </PageWrap>
   );
 };

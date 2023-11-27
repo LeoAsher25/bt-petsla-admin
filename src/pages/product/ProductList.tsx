@@ -72,9 +72,9 @@ const columns: ColumnsType<IProduct> = [
   },
   {
     title: "Ngày tạo",
-    dataIndex: "created_at",
+    dataIndex: "createdAt",
     align: "center",
-    key: "created_at",
+    key: "createdAt",
     width: "15%",
     render(value) {
       return formatTime(value);
